@@ -96,11 +96,7 @@ Xcbwin::Xcbwin(bool v) : VERBOSE(v), closed(true) {
 void Xcbwin::Open(const uint16_t iwidth,const  uint16_t iheight){
   this->width = iwidth; //set variables to member-variables
   this->height = iheight;
-  //_______________
-  //First we generate a window
-  //________________
-  window = xcb_generate_id(connection); //use the connectin to generate unique id for the window
-  // don't change w again!
+  window = xcb_generate_id(connection);
   uint32_t mask = XCB_CW_BACK_PIXEL |XCB_CW_BORDER_PIXEL| XCB_CW_EVENT_MASK; // define basic settings for the window
   uint32_t values[4];
   values[0] = screen->white_pixel;
@@ -117,44 +113,15 @@ void Xcbwin::Open(const uint16_t iwidth,const  uint16_t iheight){
                      XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
                      screen->root_visual,           /* visual              */
                      mask,values);                      /* use the options defined in mask and values */
-  closed = false; // set closed to false -> gets checked by destructor
-  
-  //______________
-  //now we set the colormap
-  //______________
+  closed = false;
   // colormapId = screen->default_colormap;
   //xcb_create_colormap (connection, XCB_COLORMAP_ALLOC_NONE, colormapId, window, screen->root_visual);
 
   colormapId = xcb_generate_id(connection);
   xcb_create_colormap (connection, XCB_COLORMAP_ALLOC_NONE, colormapId, window, screen->root_visual);
-
-
-  
-  xcb_map_window (connection, window); // maps the window an the screen
-
-
-
-  
-  //________________
-  //next we generate a pixmap.
-  //the pixmap stores every painting to recover it, if the window was covered
-  //________________
+  xcb_map_window (connection, window);
   pixmap = xcb_generate_id(connection);
   xcb_create_pixmap(connection,screen->root_depth,pixmap,window,this->width,this->height);
-  
-
-  //______________
-  //now we generate a context to draw on the window
-  //a context is something like a pen, with a defined color and size
-  //______________
-
-
-  
-  // generate predefinded color-contexts
-
-
-  
-  
   gcontextarray[kRED] = GenerateContext(SetColor(65535,0,0));
   gcontextarray[kYELLOW] = GenerateContext(SetColor(65535, 65535, 0));
   gcontextarray[kBLUE] = GenerateContext(SetColor(0, 0, 65535));
@@ -164,13 +131,6 @@ void Xcbwin::Open(const uint16_t iwidth,const  uint16_t iheight){
   gcontextarray[kGREY] = GenerateContext(SetColor(20000, 20000, 20000));
   gcontextarray[kLIGHTGREY] = GenerateContext(SetColor(40000, 40000, 40000));
   gcontextarray[kWHITE] = GenerateContext(SetColor(65535, 65535, 65535));
-
-  //______________
-  //now we generate a context to draw on the screen
-  //this is used, if a color is definde, that is not cached
-  //______________
-
-
   gcontext = xcb_generate_id(connection);
   mask = XCB_GC_FOREGROUND|XCB_GC_BACKGROUND| XCB_GC_LINE_WIDTH| XCB_GC_GRAPHICS_EXPOSURES;
   values[0] = screen->white_pixel;
@@ -178,23 +138,14 @@ void Xcbwin::Open(const uint16_t iwidth,const  uint16_t iheight){
   values[2] = 1;
   values[3] = 0;
   xcb_create_gc(connection,gcontext,pixmap,mask,values);
-
-
-
   White(); // set initial color to white
   DrawFilledRectangle(0,0,this->width, this->height); //set initial pixmap color to white
   Flush(); // paint the pixmap on the screen
-
   Black(); // set initial drawing-color to black
-
-    
-  //some x-window magic to handle close events
   wm_protocols_cookie = xcb_intern_atom(connection, 1, 12,"WM_PROTOCOLS");
   protocols_reply = xcb_intern_atom_reply(connection, wm_protocols_cookie, 0);
-
   wm_delete_window_cookie = xcb_intern_atom(connection, 0, 16, "WM_DELETE_WINDOW");
   delete_window_reply = xcb_intern_atom_reply(connection, wm_delete_window_cookie, 0);
-  // 
 }
 
 void Xcbwin::DrawPoint(uint16_t x, uint16_t y) const {
