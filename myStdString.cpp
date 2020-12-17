@@ -1,26 +1,26 @@
 #include <iostream>
 
 namespace myStd {
-class string {
-	public:
-		char str[50];
-		int num;
+	class string {
+		public:
+			char str[1024];
+			int num;
 
-		string() { num = 0; str[0] = '\0'; }
+			string() { num = 0; str[0] = '\0'; }
 
-		int size() {
-			num=0;
-			for(int i=0;str[i] != '\0';i++) {
-				num++;
+			int size() {
+				num=0;
+				for(int i=0;str[i] != '\0';i++) {
+					num++;
+				}
+				return num;
 			}
-			return num;
-		}
 
-		void push_back(char a) {
-			str[size()] = a;
-		}
+			void push_back(char a) {
+				str[size()] = a;
+			}
 
-};
+	};
 };
 
 std::istream &operator >>(std::istream &i, myStd::string &s) {
@@ -37,6 +37,5 @@ int main() {
 	std::cin>>str;
 	str.push_back('x');
 
-	std::cout<<str.size();
 	std::cout<<"\n"<<str<<"\n";
 }
