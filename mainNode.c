@@ -35,9 +35,12 @@ int nodesLen(LL *ll) {
 	return len;
 }
 
-void clearNodes(LL **ll) {
-	free((*ll));
+int clearNodes(LL **ll) {
+	free(*ll);
 	*ll = NULL;
+
+	if(*ll == NULL) { return 1; }
+	return 0;
 }
 
 void printNodes(LL *ll) {
@@ -278,9 +281,15 @@ int main() {
 				printNodes(root);
 				break;
 			case 0:
-				clearNodes(&root);
-				root = NULL;
-				exit(0);
+				if(clearNodes(&root)) {
+					printf("\nProgram success is exit.\n");
+					exit(0);
+				} else {
+					printf("\nClear nodes is error!!\n");
+					exit(1);
+				}
+				break;
+
 			default:
 				printf("\nChoice not found!\n");
 				break;
