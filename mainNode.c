@@ -37,6 +37,7 @@ int nodesLen(LL *ll) {
 
 void clearNodes(LL **ll) {
 	free((*ll));
+	*ll = NULL;
 }
 
 void printNodes(LL *ll) {
@@ -99,7 +100,7 @@ int searchNodes(LL *ll, int src) {
 		temp = temp->next;
 	}
 
-	if(ll->data == src) { flag = 1; }
+	if(temp->data == src) { flag = 1; }
 
 	return flag;
 }
@@ -120,17 +121,91 @@ void deleteNodes(LL **ll, int index) {
 	iter->next = iter->next->next;
 }
 
+LL *delToEnd(LL *ll) {
+	if(ll == NULL) { return ll; }
+	if(nodesLen(ll) == 1) {
+		clearNodes(&ll);
+		return ll;
+	}
+
+	LL *iter = ll;
+
+	while(iter->next != NULL) {
+		iter = iter->next;
+	}
+	free(iter);
+	iter = NULL;
+	return ll;
+}
+
+void inlineAdd(LL **ll, int num) {
+	if(*ll == NULL) {
+		*ll = make(num);
+		return;
+	} else if((*ll)->data > num) {
+		LL *temp = make(num);
+		temp->next = *ll;
+		*ll = temp;
+		return;
+	} else {
+		LL *tmp = make(num);
+
+		LL *iter = *ll;
+
+		while(iter->next != NULL && iter->next->data < num) {
+			iter = iter->next;
+		}
+
+		tmp->next = iter->next;
+		iter->next = tmp;
+	}
+}
+
+LL *sortNodes(LL *ll, int *arr) {
+	if(ll == NULL) { return ll; }
+
+	if(nodesLen(ll) == 1) { return ll; }
+
+	int len = nodesLen(ll);
+
+	LL *tmp = NULL;
+	for(int i=0;i<len;i++) {
+		inlineAdd(&tmp, arr[i]);
+	}
+
+	return tmp;
+}
+
+int *buubleSort(LL *ll) {
+	int len = nodesLen(ll);
+	int *arr = (int*)malloc(sizeof(int)*len);
+
+	LL *iter = ll;
+
+	for(int i=0;i<len;i++) {
+		arr[i] = iter->data;
+		iter = iter->next;
+	}
+
+	return arr;
+}
+
 void choiceMenu() {
 	printf("\nEleman ekleme       : [1]");
 	printf("\nAraya eleman ekleme : [2]");
-	printf("\nEleman silme        : [3]");
-	printf("\nEleman arama        : [4]");
-	printf("\nListeyi yazdirma    : [5]");
+	printf("\nSirali eleman ekleme: [3]");
+	printf("\nEleman silme        : [4]");
+	printf("\nSondan eleman silme : [5]");
+	printf("\nEleman arama        : [6]");
+	printf("\nSiralama            : [7]");
+	printf("\nListeyi yazdirma    : [8]");
 	printf("\n\nEXIT                : [0]\n\n");
 }
 
 int main() {
 	LL *root = NULL;
+	int *sortArr = NULL;
+
 	int choice, num, index;
 
 	while(1) {
@@ -159,6 +234,12 @@ int main() {
 				}
 				break;
 			case 3:
+				printf("\nEnter num: ");
+				scanf("%d", &num);
+				inlineAdd(&root, num);
+				printf("\nSuccess.\n");
+				break;
+			case 4:
 				printf("\nEnter index: ");
 				scanf("%d", &index);
 				if(index > nodesLen(root) || index < 0) {
@@ -168,7 +249,11 @@ int main() {
 					printf("\nSuccess.\n");
 				}
 				break;
-			case 4:
+			case 5:
+				root = delToEnd(root);
+				printf("\nSuccess.\n");
+				break;
+			case 6:
 				printf("\nSearch num: ");
 				scanf("%d", &num);
 				if(searchNodes(root, num)) {
@@ -177,7 +262,18 @@ int main() {
 					printf("\nNum not found[-]\n");
 				}
 				break;
-			case 5:
+			case 7:
+				if(root == NULL) {
+					printf("\nNodes is NULL.\n");
+				} else if(root->next == NULL) {
+					sortArr[0] = root->data;
+				} else {
+					sortArr = buubleSort(root);
+					root = sortNodes(root, sortArr);
+				}
+				printf("\nSuccess.\n");
+				break;
+			case 8:
 				system("cls || clear");
 				printNodes(root);
 				break;
