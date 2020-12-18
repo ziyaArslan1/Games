@@ -25,6 +25,7 @@ LL *make(int num) {
 }
 
 int nodesLen(LL *ll) {
+	if(ll == NULL) { return -1; }
 	LL *iter = ll;
 	int len=1;
 	while(iter->next != NULL) {
@@ -124,21 +125,16 @@ void deleteNodes(LL **ll, int index) {
 	iter->next = iter->next->next;
 }
 
-LL *delToEnd(LL *ll) {
-	if(ll == NULL) { return ll; }
-	if(nodesLen(ll) == 1) {
-		clearNodes(&ll);
-		return ll;
-	}
+void delToEnd(LL **ll) {
+	if(*ll == NULL) { return; }
 
-	LL *iter = ll;
+	LL *iter = *ll;
 
-	while(iter->next != NULL) {
+	while(iter->next->next != NULL) {
 		iter = iter->next;
 	}
-	free(iter);
-	iter = NULL;
-	return ll;
+	free(iter->next);
+	iter->next = NULL;
 }
 
 void inlineAdd(LL **ll, int num) {
@@ -253,7 +249,7 @@ int main() {
 				}
 				break;
 			case 5:
-				root = delToEnd(root);
+				delToEnd(&root);
 				printf("\nSuccess.\n");
 				break;
 			case 6:
