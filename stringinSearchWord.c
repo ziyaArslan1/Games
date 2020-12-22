@@ -18,6 +18,7 @@ int search(char *string, char *word) {
 		}
 		if(temp[len] == ' ') { temp[len] = '\0'; }
 		if(strcmp(temp, word) == 0) { count++; }
+		free(temp);
 	}
 
 	return count;
