@@ -69,5 +69,9 @@ int main() {
 	printf("\n\n");
 	writes(endArr);
 
+	free(endArr);
+	free(matris);
+	free(firstArr);
+
 	return 0;
 }
