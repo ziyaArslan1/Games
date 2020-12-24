@@ -56,4 +56,5 @@ int main() {
 		second++;
 		sleep(1);
 	}
+	return 0;
 }
