@@ -96,16 +96,22 @@ int searchNodes(LL *ll, int src) {
 	if(ll == NULL) { return 0; }
 
 	int flag = 0;
+	int loc = 0;
 
 	LL *temp = ll;
 
 	while(temp->next != NULL) {
-		if(temp->data == src) { flag = 1; }
+		if(temp->data == src) {
+			flag = 1;
+			break;
+		}
+		loc++;
 		temp = temp->next;
 	}
 
 	if(temp->data == src) { flag = 1; }
 
+	printf("\nYou searching number %d. index in found\n", loc+1);
 	return flag;
 }
 
@@ -136,6 +142,21 @@ void delToEnd(LL **ll) {
 	free(iter->next);
 	iter->next = NULL;
 }
+
+/*
+int removeEnd(LL * ll)
+{
+    Node * iter = ll->Root;
+
+    while (iter->Next->Next != NULL)
+        iter = iter->Next;
+
+    free(iter->Next);
+    iter->Next = NULL;
+
+    return EXIT_SUCCESS;
+}
+*/
 
 void inlineAdd(LL **ll, int num) {
 	if(*ll == NULL) {
