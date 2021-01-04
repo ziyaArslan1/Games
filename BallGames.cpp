@@ -14,6 +14,10 @@ namespace Game {
 				top = 0;
 			}
 
+			~Stack() {
+				delete [] arr;
+			}
+
 			bool push(int num) {
 				if(top==4) { return false; }
 				arr[top++] = num;
