@@ -4,20 +4,20 @@
 #define COL 9
 
 void printTable(char code[][COL], int *arr) {
-	printf("\n    ");
+	printf("\n   ");
 
-	for(int i=0;i<9;i++) printf("%d|", arr[i]);
+	for(int i=0;i<9;i++) printf("\e[90m%d|", arr[i]);
 
 	printf("\n");
 
 	for(int i=0;i<ROW;i++) {
-		printf("\e[92m%d : ", i+1);
+		printf("\e[90m%d |", i+1);
 
 		for(int j=0;j<COL;j++) {
 			if(code[i][j] == '*') {
-				printf("%c|", code[i][j]);
+				printf("\e[91m%c\e[90m|", code[i][j]);
 			} else {
-				printf("%c|", code[i][j]);
+				printf("\e[90m%c\e[90m|", code[i][j]);
 			}
 		}
 
