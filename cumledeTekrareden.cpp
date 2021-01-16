@@ -6,6 +6,8 @@ std::string *my(std::string *arr, int len) {
 
 	for(int i=0;i<len/2;i++)
 		newArr[i] = arr[i];
+
+	delete [] arr;
 	return newArr;
 }
 
@@ -43,19 +45,23 @@ std::pair<int, std::string> maxTry(std::string *words, int len) {
 int main() {
 	int SIZE = 10;
 	std::string *words = new std::string[SIZE];
+	std::string str="";
 
+/*
 	std::ifstream reads("kelime.txt");
 	std::string line;
+*/
 	int index=0;
 
-	while(!reads.eof()) {
-		reads>>line;
+	while(str != "exit") {
+		std::cout<<"\nKelime gir: ";
+		std::cin>>str;
 
 		if(index == SIZE) {
 			words = my(words, SIZE*2);
 			SIZE *= 2;
 		}
-		words[index++] = line;
+		words[index++] = str;
 	}
 
 	writesArr(words, SIZE);
@@ -63,8 +69,11 @@ int main() {
 
 	std::pair<int, std::string> returnValue = maxTry(words, SIZE-index);
 
-	std::cout<<"\nDosyada en cok tekrar eden kelime: "<<returnValue.second<<std::endl;
+	std::cout<<"\nEn cok tekrar eden kelime: "<<returnValue.second<<std::endl;
 	std::cout<<"Tekrar sayisi: "<<returnValue.first<<std::endl;
 
+	writesArr(words, SIZE);
+
+	delete [] words;
 	return 0;
 }
