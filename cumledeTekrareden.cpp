@@ -67,7 +67,7 @@ int main() {
 	writesArr(words, SIZE);
 	words[index-1] = "";
 
-	std::pair<int, std::string> returnValue = maxTry(words, SIZE-index);
+	std::pair<int, std::string> returnValue = maxTry(words, index);
 
 	std::cout<<"\nEn cok tekrar eden kelime: "<<returnValue.second<<std::endl;
 	std::cout<<"Tekrar sayisi: "<<returnValue.first<<std::endl;
