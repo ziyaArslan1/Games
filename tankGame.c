@@ -83,11 +83,12 @@ void damagePlayer(int *playerHp) {
 	*playerHp -= 5;
 }
 
-int tankCtrl(char tankMap[][MAPSIZE][MAPSIZE]) {
+int tankCtrl(char tankMap[][MAPSIZE][MAPSIZE], struct TANK *t) {
 	for(size_t i=0;i<MAPSIZE;i++)
 		for(size_t j=0;j<MAPSIZE;j++)
-			if(!(strcmp(tankMap[i][j], "  ") == 0))
-				return 1;
+			for(size_t index=0;index<10;index++)
+				if(strcmp(tankMap[i][j], t[index].name) == 0)
+					return 1;
 
 	return 0;
 }
@@ -95,9 +96,9 @@ int tankCtrl(char tankMap[][MAPSIZE][MAPSIZE]) {
 void game(char tankMap[][MAPSIZE][MAPSIZE], int playerMap[][MAPSIZE], int *playerHp, struct TANK *t) {
 	size_t row, column;
 
-	while(tankCtrl(tankMap)) {
+	while(tankCtrl(tankMap, t)) {
 		printMap(tankMap);
-		printf("\nenter row column(0-9): ");
+		printf("\nenter row column(0-4): ");
 		scanf("%zu%zu", &row, &column);
 
 		system("clear || cls");
@@ -119,6 +120,11 @@ void game(char tankMap[][MAPSIZE][MAPSIZE], int playerMap[][MAPSIZE], int *playe
 		}
 
 		printf("your Hp: %d\n", *playerHp);
+
+		if(*playerHp == 0) {
+			printf("\nmission failed\n\n");
+			break;
+		}
 	}
 
 	printMap(tankMap);
@@ -139,7 +145,6 @@ int main() {
 
 	game(tankMap, playerMap, &playerHp, t);
 
-	system("clear");
 	printf("you win\n\n");
 
 	return 0;
