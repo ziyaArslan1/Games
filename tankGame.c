@@ -47,9 +47,16 @@ void init(char tankMap[][MAPSIZE][MAPSIZE], int playerMap[][MAPSIZE], struct TAN
 }
 
 void printMap(char tankMap[][MAPSIZE][MAPSIZE]) {
+	printf("    ");
+	for(size_t i=0;i<MAPSIZE;i++)
+		printf("  %zu  |", i);
+	printf("\n");
+	printf("__________________________________\n");
+
 	for(size_t i=0;i<MAPSIZE;i++) {
+		printf("%zu ->", i);
 		for(size_t j=0;j<MAPSIZE;j++)
-			printf(" %s |", tankMap[i][j]);
+			printf(" xxx |"/*, tankMap[i][j]*/);
 		printf("\n");
 	}
 }
@@ -93,7 +100,7 @@ void game(char tankMap[][MAPSIZE][MAPSIZE], int playerMap[][MAPSIZE], int *playe
 		printf("\nenter row column(0-9): ");
 		scanf("%zu%zu", &row, &column);
 
-		//system("clear || cls");
+		system("clear || cls");
 
 		if(!(strcmp(tankMap[row][column], "   ") == 0)) {
 			printf("%s is damaged\n", tankMap[row][column]);
