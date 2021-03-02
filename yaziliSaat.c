@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static int dateCtrl(char *clock) {
+static int clockCtrl(char *clock) {
 	if(clock[0] >= 51 || clock[3] > 53 || clock[2] != ':' || strlen(clock) > 5 || (clock[0] == 50 && clock[1] >= 53))
 		return 0;
 
@@ -48,7 +48,7 @@ char *endClock(char clock[][8]) {
 }
 
 void returnClock(char *clock) {
-	if(!dateCtrl(clock)) {
+	if(!clockCtrl(clock)) {
 		printf("\nLutfen duzgun giris yapin!\n");
 		return;
 	}
