@@ -1,83 +1,88 @@
+/*
+* date  : 03.03.2021
+* author: ziya arslan
+* generic dynamic array
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct _DA {
-	void *array;
-	size_t capacity;
-	size_t size;
-	size_t typeSize;
-}DA;
+typedef struct _ZZ {
+        void *arr;
+        size_t cap;
+        size_t size;
+        size_t type;
+}ZZ;
 
-int DA_init(DA *arr, size_t typeSize) {
-	arr->capacity = 4;
-	arr->size = 0;
-	arr->typeSize = typeSize;
+int init(ZZ *root, size_t type) {
+        root->cap = 4;
+        root->size = 0;
+        root->type = type;
 
-	arr->array = malloc(typeSize*4);
-	if(arr == NULL) {
-		return EXIT_FAILURE;
-	}
+        root->arr = malloc(type*root->cap);
 
-	return EXIT_SUCCESS;
+        if(root->arr == NULL)
+                return EXIT_FAILURE;
+
+        return EXIT_SUCCESS;
 }
 
-int DA_add(DA *arr, void *address) {
-	if(arr->size >= arr->capacity) {
-		arr->capacity *= 2;
-		arr->array = realloc(arr->array, arr->capacity*arr->typeSize);
-		memcpy(arr->array+arr->size*arr->typeSize, address, arr->typeSize);
-		arr->size++;
+int addFunction(ZZ *root, void *address) {
+        if(root->size >= root->cap) {
+                root->cap *= 2;
+                root->arr = realloc(root->arr, root->cap*root->type);
 
-		return EXIT_SUCCESS;
-	}
+                memcpy(root->arr + root->size * root->type, address, root->type);
+                root->size++;
+                return EXIT_SUCCESS;
+        }
 
-	memcpy(arr->array+arr->size*arr->typeSize, address, arr->typeSize);
-	arr->size++;
-	return EXIT_SUCCESS;
+        memcpy(root->arr + root->size * root->type, address, root->type);
+        root->size++;
+        return EXIT_SUCCESS;
 }
 
-void *DA_get(DA *arr) {
-	return arr->array+arr->size;
+int delFunction(ZZ *root, size_t index) {
+        if(root->size == 0) {
+                printf("array is empty!\n");
+                return EXIT_FAILURE;
+        }
+        return 1;
 }
 
-void DA_clear(DA *arr) {
-	free(arr->array);
+void clearZZ(ZZ *root) {
+        free(root->arr);
+        free(root);
 }
 
-void DA_print(DA *arr, size_t type) {
-	int index = 1;
-	for(size_t i=0;i<arr->typeSize*arr->size;i += arr->typeSize) {
-		printf("%d. data: %d\n",index++, *(int*)(arr->array + i));
-	}
-}
+void printZZ(ZZ *root, size_t type) {
+        size_t index=1;
 
-struct test {
-	int x,y;
-	char name[10];
-};
+        for(size_t i=0;i<root->type*root->size;i += root->type)
+                printf("%zu. data: %d\n", index++, *(int*)(root->arr+i));
+
+}
 
 int main() {
-	DA *arr;
-	struct test t;
+        // test
+        ZZ *start = (ZZ*)malloc(sizeof(ZZ));
 
-	int ch=97;
-	for(int i=0;i<5;i++) {
-		t.x = rand()%99+1;
-		t.y = rand()%99+1;
-		strcpy(t.name, (char*)&ch);
-		ch++;
-	}
+        if(init(start, sizeof(int)) == EXIT_FAILURE) {
+                printf("\ninit() error!\n");
+                return -1;
+        }
 
-	if(DA_init(arr, sizeof(int)) == EXIT_FAILURE) {
-		perror("\nDA_init() error!!\n");
-		return -1;
-	}
+        for(int i=1;i<=20;i++) {
+                int num = rand()%(122-97+1)+97;
+                addFunction(start, &num);
+        }
 
-	for(int i=1;i<=10;i++) {
-		DA_add(arr, &i);
-	}
+        printZZ(start, sizeof(int));
 
-	DA_print(arr, sizeof(int));
-	DA_clear(arr);
-	return 0;
+        printf("\ncap : %zu\n", start->cap);
+        printf("size: %zu\n", start->size);
+        printf("type: %zu\n", start->type);
+
+        clearZZ(start);
+        return 0;
 }
