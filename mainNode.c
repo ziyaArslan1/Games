@@ -24,6 +24,13 @@ LL *make(int num) {
 	return newNode;
 }
 
+void clearLL(LL *ll) {
+        while(ll->next != NULL) {
+                free(ll);
+                ll = ll->next;
+        }
+}
+
 int nodesLen(LL *ll) {
 	if(ll == NULL) { return -1; }
 	LL *iter = ll;
@@ -193,6 +200,7 @@ LL *sortNodes(LL *ll, int *arr) {
 		inlineAdd(&tmp, arr[i]);
 	}
 
+	free(arr);
 	return tmp;
 }
 
@@ -298,10 +306,12 @@ int main() {
 				printNodes(root);
 				break;
 			case 0:
+				clearLL(root);
 				if(clearNodes(&root)) {
 					printf("\nProgram success is exit.\n");
 					exit(0);
 				} else {
+					clearLL(root);
 					printf("\nClear nodes is error!!\n");
 					exit(1);
 				}
