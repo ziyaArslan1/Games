@@ -59,7 +59,7 @@ void initMain(char (*tankMap)[][MAPSIZE][MAPSIZE], char (*playerMap)[][MAPSIZE][
 		}
 	}
 
-	int flag=15;
+	int flag=TANKSIZE;
 	while(flag--) {
 		strcpy((*tankMap)[rand()%MAPSIZE+0][rand()%MAPSIZE+0], (*enemyTanks)[index].name);
 		strcpy((*playerMap)[rand()%MAPSIZE+0][rand()%MAPSIZE+0], (*playerTanks)[index].name);
@@ -67,7 +67,22 @@ void initMain(char (*tankMap)[][MAPSIZE][MAPSIZE], char (*playerMap)[][MAPSIZE][
 	}
 }
 
-void printMap(char (*map)[][MAPSIZE][MAPSIZE]) {
+void printEnemyMap(char (*map)[][MAPSIZE][MAPSIZE]) {
+	printf("    ");
+	for(size_t i=0;i<MAPSIZE;i++)
+		printf("  %zu  |", i);
+	printf("\n");
+	printf("______________________________________________\n");
+	for(size_t i=0;i<MAPSIZE;i++) {
+		printf("%zu ->", i);
+		for(size_t j=0;j<MAPSIZE;j++)
+			printf(" xxx |"/*, (*map)[i][j]*/);
+		printf("\n");
+	}
+	printf("______________________________________________\n");
+}
+
+void printYourMap(char (*map)[][MAPSIZE][MAPSIZE]) {
 	printf("    ");
 	for(size_t i=0;i<MAPSIZE;i++)
 		printf("  %zu  |", i);
@@ -167,11 +182,11 @@ void game(char (*tankMap)[][MAPSIZE][MAPSIZE], char (*playerMap)[][MAPSIZE][MAPS
 		size_t rnd1, rnd2;
 
 		printf("\n\n\t--------[ ENEMY ]----------\n\n");
-		printMap(tankMap);
+		printEnemyMap(tankMap);
 		printf("\n\n\t--------[ YOUR  ]----------\n\n");
-		printMap(playerMap);
+		printYourMap(playerMap);
 
-		printf("\n\nenter row column(0-4): ");
+		printf("\n\nenter row column(0-6): ");
 		scanf("%s%s", row, column);
 
 		while(entryCtrl(row, column)) {
@@ -203,7 +218,6 @@ void game(char (*tankMap)[][MAPSIZE][MAPSIZE], char (*playerMap)[][MAPSIZE][MAPS
 	}
 
 	printf("\nYOU WIN\n\n");
-	printMap(tankMap);
 }
 
 int main() {
@@ -215,18 +229,19 @@ int main() {
 	char tankMap[MAPSIZE][MAPSIZE][MAPSIZE];
 	char playerMap[MAPSIZE][MAPSIZE][MAPSIZE];
 
-	initPCTank(&enemyTanks);
-	initPlayerTank(&playerTanks);
+	initPCTank(&enemyTanks); // enemyTank initialize
+	initPlayerTank(&playerTanks); // playerTank initialize
 
-	initMain(&tankMap, &playerMap, &enemyTanks, &playerTanks);
+	initMain(&tankMap, &playerMap, &enemyTanks, &playerTanks); // map initialize
 
 	system("clear");
+/*
+	printf("\n-------ENEMYTANKS--------\n");
+	printMap(&tankMap);
+	printf("\n-------PLAYERTANKS-------\n");
+	printMap(&playerMap);
+*/
 
-//	printf("\n-------ENEMYTANKS--------\n");
-//	printMap(&tankMap);
-//	printf("\n-------PLAYERTANKS-------\n");
-//	printMap(&playerMap);
-
-	game(&tankMap, &playerMap, &enemyTanks, &playerTanks);
+	game(&tankMap, &playerMap, &enemyTanks, &playerTanks); // play game
 	return 0;
 }
