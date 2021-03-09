@@ -27,7 +27,8 @@ typedef struct _PLAYERTANK {
 
 void initPCTank(enemyTank (*enemyTanks)[]) {
 	for(size_t i=0;i<TANKSIZE;i++) {
-		char name[3]={0};
+		char name[3];
+		memset(name, ' ', sizeof(name));
 		for(size_t j=0;j<3;j++)
 			name[j] = rand()%(122-97+1)+97;
 
@@ -58,7 +59,7 @@ void initMain(char (*tankMap)[][MAPSIZE][MAPSIZE], char (*playerMap)[][MAPSIZE][
 		}
 	}
 
-	int flag=20;
+	int flag=15;
 	while(flag--) {
 		strcpy((*tankMap)[rand()%MAPSIZE+0][rand()%MAPSIZE+0], (*enemyTanks)[index].name);
 		strcpy((*playerMap)[rand()%MAPSIZE+0][rand()%MAPSIZE+0], (*playerTanks)[index].name);
@@ -104,7 +105,7 @@ static int ctrlGunEnemy(enemyTank (*enemyTanks)[], char (*enemyMap)[][MAPSIZE][M
 		if(strcmp((*enemyTanks)[i].name, (*enemyMap)[row][col]) == 0) {
 			if((*enemyTanks)[i].gun <= 0) {
 				//strcpy((*enemyTanks)[i].name, "null");
-				strcpy((*enemyMap)[row][col], "null");
+				strcpy((*enemyMap)[row][col], "nul");
 				return 1;
 			}
 		}
@@ -165,8 +166,9 @@ void game(char (*tankMap)[][MAPSIZE][MAPSIZE], char (*playerMap)[][MAPSIZE][MAPS
 		char row[2], column[2];
 		size_t rnd1, rnd2;
 
+		printf("\n\n\t--------[ ENEMY ]----------\n\n");
 		printMap(tankMap);
-		printf("\n\n\n");
+		printf("\n\n\t--------[ YOUR  ]----------\n\n");
 		printMap(playerMap);
 
 		printf("\n\nenter row column(0-4): ");
