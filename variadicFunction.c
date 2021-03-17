@@ -11,19 +11,24 @@ void myScanf(char *fmt, ...) {
 	char *charArg;
 	char *strArg;
 
+	char myStdin[10];
+
 	for(size_t i=0;i<strlen(fmt);i++) {
 		switch(fmt[i]) {
 			case 'd':
 				integerArg = va_arg(arg, int*);
-				*integerArg = 34;
+				fgets(myStdin, sizeof(myStdin), stdin);
+				*integerArg = atoi(myStdin);
 				break;
 			case 'c':
 				charArg = va_arg(arg, char*);
-				*charArg = 'z';
+				fgets(myStdin, sizeof(myStdin), stdin);
+				*charArg = myStdin[0];
 				break;
 			case 's':
 				strArg = va_arg(arg, char*);
-				strcpy(strArg, "hiii");
+				fgets(myStdin, sizeof(myStdin), stdin);
+				strcpy(strArg, myStdin);
 				break;
 			default:
 				continue;
