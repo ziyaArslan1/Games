@@ -89,54 +89,52 @@ int main(int argc, char **argv) {
 
 	if(!(device = pa_simple_new(NULL, "MP3 player", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, NULL, &error))) {
 		printf("pa_simple_new() error!\n");
-		return 255;
+		return -1;
 	}
 
-    mad_stream_init(&mad_stream);
-    mad_synth_init(&mad_synth);
-    mad_frame_init(&mad_frame);
+	mad_stream_init(&mad_stream);
+	mad_synth_init(&mad_synth);
+	mad_frame_init(&mad_frame);
 
-    char *filename = "file.mp3";
-    FILE *fp = fopen(filename, "r");
-    int fd = fileno(fp);
+	char *filename = "file.mp3";
+	FILE *fp = fopen(filename, "r");
+	int fd = fileno(fp);
 
-    struct stat metadata;
-    if (fstat(fd, &metadata) >= 0) {
-        printf("File size %d bytes\n", (int)metadata.st_size);
-    } else {
-        printf("Failed to stat %s\n", filename);
-        fclose(fp);
-        return 254;
-    }
+	struct stat metadata;
+	if(fstat(fd, &metadata) >= 0) {
+		printf("File size %d bytes\n", (int)metadata.st_size);
+	} else {
+		printf("Failed to stat %s\n", filename);
+		fclose(fp);
+        return -1;
+	}
 
-    unsigned char *input_stream = mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	unsigned char *input_stream = mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
 
-    mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
+	while(1) {
+		if(mad_frame_decode(&mad_frame, &mad_stream)) {
+			if(MAD_RECOVERABLE(mad_stream.error)) {
+				continue;
+			} else if (mad_stream.error == MAD_ERROR_BUFLEN) {
+				continue;
+			} else {
+				break;
+			}
+		}
+		mad_synth_frame(&mad_synth, &mad_frame);
+		output(&mad_frame.header, &mad_synth.pcm);
+	}
+	fclose(fp);
 
-    while (1) {
-        if (mad_frame_decode(&mad_frame, &mad_stream)) {
-            if (MAD_RECOVERABLE(mad_stream.error)) {
-                continue;
-            } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
-                continue;
-            } else {
-                break;
-            }
-        }
-        mad_synth_frame(&mad_synth, &mad_frame);
-        output(&mad_frame.header, &mad_synth.pcm);
-    }
+	mad_synth_finish(&mad_synth);
+	mad_frame_finish(&mad_frame);
+	mad_stream_finish(&mad_stream);
 
-    fclose(fp);
+	if(device)
+		pa_simple_free(device);
 
-    mad_synth_finish(&mad_synth);
-    mad_frame_finish(&mad_frame);
-    mad_stream_finish(&mad_stream);
-
-    if (device)
-        pa_simple_free(device);
-
-    return EXIT_SUCCESS;
+	return 0;
 }
 
 static int scale(mad_fixed_t sample) {
