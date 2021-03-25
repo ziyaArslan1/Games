@@ -141,7 +141,7 @@ static int scale(mad_fixed_t sample) {
 	else if(sample < -MAD_F_ONE)
 		sample = -MAD_F_ONE;
 
-	return (sample >> (MAD_F_FRACBITS - 16));
+	return sample >> (MAD_F_FRACBITS + 1 - 16);
 }
 
 void output(struct mad_header const *header, struct mad_pcm *pcm) {
