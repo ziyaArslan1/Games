@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
 	} else {
 		printf("Failed to stat %s\n", filename);
 		fclose(fp);
-        return -1;
+		return -1;
 	}
 
 	unsigned char *input_stream = mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
@@ -114,13 +114,9 @@ int main(int argc, char **argv) {
 
 	while(1) {
 		if(mad_frame_decode(&mad_frame, &mad_stream)) {
-			if(MAD_RECOVERABLE(mad_stream.error)) {
-				continue;
-			} else if (mad_stream.error == MAD_ERROR_BUFLEN) {
-				continue;
-			} else {
-				break;
-			}
+			if(MAD_RECOVERABLE(mad_stream.error)) continue;
+			else if (mad_stream.error == MAD_ERROR_BUFLEN) continue;
+			else break;
 		}
 		mad_synth_frame(&mad_synth, &mad_frame);
 		output(&mad_frame.header, &mad_synth.pcm);
