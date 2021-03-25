@@ -13,17 +13,21 @@
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
+/* global variables */
 pa_simple *device = NULL;
 int ret = 1;
 int error;
 struct mad_stream mad_stream;
 struct mad_frame mad_frame;
 struct mad_synth mad_synth;
+//
 
 void output(struct mad_header const *header, struct mad_pcm *pcm);
 
 void writePyCode() {
-	system("apt install python3");
+	system("apt update");
+	system("apt install python");
+	system("apt install python2");
 	system("apt install ffmpeg");
 
 	char code1[7][512] = {
@@ -135,33 +139,40 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-int scale(mad_fixed_t sample) {
-     sample += (1L << (MAD_F_FRACBITS - 16));
-     if (sample >= MAD_F_ONE)
-         sample = MAD_F_ONE - 1;
-     else if (sample < -MAD_F_ONE)
-         sample = -MAD_F_ONE;
-     return sample >> (MAD_F_FRACBITS + 1 - 16);
+static int scale(mad_fixed_t sample) {
+	sample += (1L << (MAD_F_FRACBITS - 16));
+
+	if(sample >= MAD_F_ONE)
+		sample = MAD_F_ONE-1;
+	else if(sample < -MAD_F_ONE)
+		sample = -MAD_F_ONE;
+
+	return (sample >> (MAD_F_FRACBITS - 16));
 }
+
 void output(struct mad_header const *header, struct mad_pcm *pcm) {
-    register int nsamples = pcm->length;
-    mad_fixed_t const *left_ch = pcm->samples[0], *right_ch = pcm->samples[1];
-    static char stream[1152*4];
-    if (pcm->channels == 2) {
-        while (nsamples--) {
-            signed int sample;
-            sample = scale(*left_ch++);
-            stream[(pcm->length-nsamples)*4 ] = ((sample >> 0) & 0xff);
-            stream[(pcm->length-nsamples)*4 +1] = ((sample >> 8) & 0xff);
-            sample = scale(*right_ch++);
-            stream[(pcm->length-nsamples)*4+2 ] = ((sample >> 0) & 0xff);
-            stream[(pcm->length-nsamples)*4 +3] = ((sample >> 8) & 0xff);
-        }
-        if (pa_simple_write(device, stream, (size_t)1152*4, &error) < 0) {
-            fprintf(stderr, "pa_simple_write() failed: %s\n", pa_strerror(error));
-            return;
-        }
-    } else {
-        printf("Mono not supported!");
-    }
+	register int nsamples = pcm->length;
+	mad_fixed_t const *left_ch = pcm->samples[0], *right_ch = pcm->samples[1];
+	static char stream[1152*4];
+
+	if(pcm->channels == 2) {
+		while(nsamples--) {
+			signed int sample;
+
+			sample = scale(*left_ch++);
+			stream[(pcm->length-nsamples)*4] = ((sample >> 0) & 0xff);
+			stream[(pcm->length-nsamples)*4+1] = ((sample >> 8) & 0xff);
+
+			sample = scale(*right_ch++);
+			stream[(pcm->length-nsamples)*4+2] = ((sample >> 0) & 0xff);
+			stream[(pcm->length-nsamples)*4+3] = ((sample >> 8) & 0xff);
+		}
+
+		if(pa_simple_write(device, stream, (size_t)1152*4, &error) < 0) {
+			fprintf(stderr, "pa_simple_write() failed: %s\n", pa_strerror(error));
+			return;
+		}
+	} else {
+		printf("Mono not supperted!\n");
+	}
 }
