@@ -69,6 +69,10 @@ void apply(char **arr, const char *str) {
 	}
 
 	print(arr, wordSize);
+
+	for(int i=0;i<wordSize;i++)
+		free(arr[i]);
+	free(arr);
 }
 
 int main() {
