@@ -2,6 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define swapInit(TYPE) \
+void swap(TYPE *val1, TYPE *val2) {\
+	TYPE tmp = *val1;\
+	*val1 = *val2;\
+	*val2 = tmp;\
+}
+
+swapInit(char);
+
 typedef unsigned int uint;
 static uint findWord(const char *str) {
 	uint size = 1;
@@ -26,12 +35,6 @@ static void print(char **arr, const int wordSize) {
 	for(int i=0;i<wordSize;i++)
 		printf("%s ", arr[i]);
 	printf("\n");
-}
-
-static void swap(char *val1, char *val2) {
-	char tmp = *val1;
-	*val1 = *val2;
-	*val2 = tmp;
 }
 
 static void myMemset(char **arr, const char *str, size_t size) {
