@@ -1,57 +1,95 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
-int myStrlen(char *str) {
-	int num=0;
-	for(int i=0;str[i] != '\0';i++) num++;
-	return num;
+#define swapInit(TYPE) \
+void swap(TYPE *val1, TYPE *val2) {\
+	TYPE tmp = *val1;\
+	*val1 = *val2;\
+	*val2 = tmp;\
 }
 
-void myStrcpy(char *str1, char *str2) {
-	int len = myStrlen(str2);
-	int i;
+swapInit(char);
 
-	for(i=0;i<len;i++) {
-		str1[i] = str2[i];
-	}
-	str1[i] = '\0';
+typedef unsigned int uint;
+static uint findWord(const char *str) {
+	uint size = 1;
+
+	for(int i=0;i<strlen(str);i++)
+		if(str[i] == '\x20' && (str[i+1] >= 33 && str[i+1] <= 126))
+			size++;
+
+	return size;
 }
 
-void print(char str[][30]) {
-	for(int i=0;i<10;i++) {
-		printf("\n%d word : %s\n", i+1, str[i]);
+static char **make(const int strSize, const int wordSize) {
+	char **res = (char**)malloc(sizeof(char*)*wordSize);
+	for(int i=0;i<wordSize;i++)
+		res[i] = (char*)malloc(sizeof(char)*strSize);
+
+	return res;
+}
+
+static void print(char **arr, const int wordSize) {
+	for(int i=0;i<wordSize;i++)
+		printf("%d. Kelime: %s\n",i+1, arr[i]);
+	printf("\n");
+}
+
+static void myMemset(char **arr, const char *str, size_t size) {
+	for(int i=0;i<size;i++)
+		strcpy(arr[i], str);
+}
+
+void apply(char **arr, const char *str) {
+	const int wordSize = findWord(str);
+
+	arr = make(1024, wordSize);
+	myMemset(arr, "", wordSize);
+	int arrIndex=0;
+
+	for(int i=0;i<strlen(str);) {
+		char *tmp;
+		int index=0, j;
+
+		for(j=i;str[j] != ' ';j++);
+		tmp = (char*)malloc(sizeof(char)*j+1);
+
+		for(j=i;str[i++] != ' ';j++)
+			tmp[index++] = str[j];
+		tmp[j] = '\0';
+
+/*
+		int size=strlen(tmp)-1;
+		for(int m=0;m<strlen(tmp)/2;m++)
+			swap(&tmp[m], &tmp[size--]);
+*/
+
+		if(arrIndex < wordSize)
+			strcpy(arr[arrIndex++], tmp);
+
+		memset(tmp, 0, strlen(tmp));
+		free(tmp);
 	}
+
+	print(arr, wordSize);
+
+	for(int i=0;i<wordSize;i++)
+		free(arr[i]);
+	free(arr);
 }
 
 int main() {
-	char arr[10][30]={0};
-	char str[200]={0};
+	char **wordArray = NULL;
+	char str[1024]={0};
 
-	printf("\nCumle gir(sadece 200 karakter): ");
+	printf("str: ");
 	fgets(str, sizeof(str), stdin);
+	str[strlen(str)-1] = '\0';
 
-	int y=0;
-
-	printf("\nKelimeler ayriliyor....\n");
+	printf("\nKelimeler ayriliyor...\n");
 	sleep(1);
 
-	for(int i=0;i<myStrlen(str);) {
-		int j, x=0;
-		for(j=i;str[j] != ' ';j++);
-
-		char *temp = (char*)malloc(sizeof(char)*j);
-
-		for(j=i;str[i++] != ' ';j++) {
-			temp[x++] = str[j];
-		}
-
-		myStrcpy(arr[y++], temp);
-		free(temp);
-	}
-
-	print(arr);
-	fflush(stdin);
-	fflush(stdout);
-	return 0;
+	apply(wordArray, str);
 }
