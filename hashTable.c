@@ -3,18 +3,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#define key 7
+#include <time.h>
 
 typedef struct {
 	int *array;
 	size_t cap;
 	size_t size;
+	size_t key;
 }HASH;
 
 void init(HASH **hash) {
 	(*hash)->size = 0;
 	(*hash)->cap = 4;
+	(*hash)->key = rand()%(10-2+1)+2;
 
 	(*hash)->array = (int*)malloc(sizeof(int)*(*hash)->cap);
 }
@@ -27,7 +28,7 @@ int encrypt(HASH **hash, const char *value) {
 				(*hash)->cap *= 2;
 				(*hash)->array = (int*)realloc((*hash)->array, sizeof(int)*(*hash)->cap);
 			}
-			(*hash)->array[(*hash)->size++] = (num%10)+key;
+			(*hash)->array[(*hash)->size++] = (num%10)+(*hash)->key;
 			num /= 10;
 		}
 		(*hash)->array[(*hash)->size++] = -1;
@@ -51,7 +52,7 @@ void decrypt(HASH **hash) {
 
 		int num = 0;
 		for(int m=j-1;(*hash)->array[m] != -1;m--) {
-			num += ((*hash)->array[m]-key)*step;
+			num += ((*hash)->array[m]-(*hash)->key)*step;
 			step /= 10;
 		}
 
@@ -81,6 +82,8 @@ void printHash(HASH **hash) {
 }
 
 int main() {
+	srand((unsigned)time(NULL));
+
 	HASH *hash = (HASH*)malloc(sizeof(HASH));
 	init(&hash);
 
