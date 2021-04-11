@@ -40,28 +40,19 @@ int unput(HASH *hash) {
 	int index=0;
 	int *nums = (int*)malloc(sizeof(int)*100);
 
+	int steps[] = {0,1,10,100,1000,10000,100000,1000000};
+
 	for(int i=0;i<hash->size;) {
-		int count=0, basamak, j;
+		int count=0, step, j;
 		for(j=i;hash->array[i++] != -1;j++)
 			count++;
 
-		if(count == 6)
-			basamak = 100000;
-		else if(count == 5)
-			basamak = 10000;
-		else if(count == 4)
-			basamak = 1000;
-		else if(count == 3)
-			basamak = 100;
-		else if(count == 2)
-			basamak = 10;
-		else if(count == 1)
-			basamak = count;
+		step = steps[count];
 
 		int num = 0;
 		for(int m=j-1;hash->array[m] != -1;m--) {
-			num += (hash->array[m]-key)*basamak;
-			basamak /= 10;
+			num += (hash->array[m]-key)*step;
+			step /= 10;
 		}
 
 		nums[index++] = num;
