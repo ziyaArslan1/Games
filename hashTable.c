@@ -12,46 +12,46 @@ typedef struct {
 	size_t size;
 }HASH;
 
-void init(HASH *d) {
-	d->size = 0;
-	d->cap = 4;
+void init(HASH **hash) {
+	(*hash)->size = 0;
+	(*hash)->cap = 4;
 
-	d->array = (int*)malloc(sizeof(int)*d->cap);
+	(*hash)->array = (int*)malloc(sizeof(int)*(*hash)->cap);
 }
 
-int put(HASH *hash, const char *value) {
+int encrypt(HASH **hash, const char *value) {
 	for(int i=0;i<strlen(value);i++) {
 		int num = value[i];
 		while(num) {
-			if(hash->size >= hash->cap) {
-				hash->cap *= 2;
-				hash->array = (int*)realloc(hash->array, sizeof(int)*hash->cap);
+			if((*hash)->size >= (*hash)->cap) {
+				(*hash)->cap *= 2;
+				(*hash)->array = (int*)realloc((*hash)->array, sizeof(int)*(*hash)->cap);
 			}
-			hash->array[hash->size++] = (num%10)+key;
+			(*hash)->array[(*hash)->size++] = (num%10)+key;
 			num /= 10;
 		}
-		hash->array[hash->size++] = -1;
+		(*hash)->array[(*hash)->size++] = -1;
 	}
 
 	return 1;
 }
 
-void unput(const HASH *hash) {
+void decrypt(HASH **hash) {
 	int index=0, cap=4;
 	int *nums = (int*)malloc(sizeof(int)*cap);
 
 	int steps[] = {0,1,10,100,1000,10000,100000,1000000};
 
-	for(int i=0;i<hash->size;) {
+	for(int i=0;i<(*hash)->size;) {
 		int count=0, step, j;
-		for(j=i;hash->array[i++] != -1;j++)
+		for(j=i;(*hash)->array[i++] != -1;j++)
 			count++;
 
 		step = steps[count];
 
 		int num = 0;
-		for(int m=j-1;hash->array[m] != -1;m--) {
-			num += (hash->array[m]-key)*step;
+		for(int m=j-1;(*hash)->array[m] != -1;m--) {
+			num += ((*hash)->array[m]-key)*step;
 			step /= 10;
 		}
 
@@ -74,15 +74,15 @@ void unput(const HASH *hash) {
 	free(nums);
 }
 
-void printHash(HASH *hash) {
-	for(int i=0;i<hash->size;i++)
-		printf("%d", hash->array[i]);
+void printHash(HASH **hash) {
+	for(int i=0;i<(*hash)->size;i++)
+		printf("%d", (*hash)->array[i]);
 	printf("\n");
 }
 
 int main() {
 	HASH *hash = (HASH*)malloc(sizeof(HASH));
-	init(hash);
+	init(&hash);
 
 	char str[1024];
 
@@ -93,12 +93,12 @@ int main() {
 	printf("Normal : %s\n", str);
 
 	//encrypt
-	put(hash, str);
+	encrypt(&hash, str);
 	printf("Sifrelenmis : ");
-	printHash(hash);
+	printHash(&hash);
 
 	//decrypt
-	unput(hash);
+	decrypt(&hash);
 
 	free(hash->array);
 	free(hash);
