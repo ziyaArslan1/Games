@@ -36,9 +36,9 @@ int put(HASH *hash, const char *value) {
 	return 1;
 }
 
-int unput(HASH *hash) {
-	int index=0;
-	int *nums = (int*)malloc(sizeof(int)*100);
+void unput(const HASH *hash) {
+	int index=0, cap=4;
+	int *nums = (int*)malloc(sizeof(int)*cap);
 
 	int steps[] = {0,1,10,100,1000,10000,100000,1000000};
 
@@ -55,6 +55,11 @@ int unput(HASH *hash) {
 			step /= 10;
 		}
 
+		if(index >= cap) {
+			cap *= 2;
+			nums = (int*)realloc(nums, sizeof(int)*cap);
+		}
+
 		nums[index++] = num;
 	}
 
@@ -67,7 +72,6 @@ int unput(HASH *hash) {
 
 	free(str);
 	free(nums);
-	return 1;
 }
 
 void printHash(HASH *hash) {
@@ -80,10 +84,11 @@ int main() {
 	HASH *hash = (HASH*)malloc(sizeof(HASH));
 	init(hash);
 
-	char str[34];
+	char str[1024];
 
-	printf("str: ");
-	scanf("%s", str);
+	printf("enter of string(1024): ");
+	fgets(str, sizeof(str), stdin);
+	str[strlen(str)-1] = '\0';
 
 	printf("Normal : %s\n", str);
 
