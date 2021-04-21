@@ -26,9 +26,10 @@ int *myReallocC(int *arr, int *len, char *str) {
 	return NULL;
 }
 
-int *myReallocCpp(int *arr, int *len, char *str) {
+template <typename T>
+T *myReallocCpp(T *arr, int *len, char *str) {
 	if(strcmp(str, "genislet") == 0) {
-		int *newArr = new int[(*len)*2];
+		T *newArr = new T[(*len)*2];
 
 		for(int i=0;i<(*len);i++) { newArr[i] = arr[i]; }
 
@@ -37,7 +38,7 @@ int *myReallocCpp(int *arr, int *len, char *str) {
 
 		return newArr;
 	} else if(strcmp(str, "daralt") == 0) {
-		int *newArr = new int[((*len)/2)];
+		T *newArr = new T[((*len)/2)];
 
 		for(int i=0;i<(*len)/2;i++) { newArr[i] = arr[i]; }
 
@@ -68,6 +69,7 @@ int main() {
 		if(i==lenC) { arrC = myReallocC(arrC, &lenC, arttir); }
 		if(i==lenCpp) { arrCpp = myReallocCpp(arrCpp, &lenCpp, arttir); }
 
+		std::cout<<"num: ";
 		std::cin>>num;
 		if(num <= 0) { break; }
 
