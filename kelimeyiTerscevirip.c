@@ -41,11 +41,14 @@ static char **make(const int strSize, const int wordSize) {
 	return res;
 }
 
-static void print(char **arr, const int wordSize) {
-	printf("words: ");
+static uint sizeChars(char **arr, const int wordSize) {
+	uint size=0;
+
 	for(int i=0;i<wordSize;i++)
-		printf("%s ", arr[i]);
-	printf("\n");
+		for(int j=0;arr[i][j] != '\0';j++)
+			size++;
+
+	return size;
 }
 
 static void myMemset(char **arr, const char *str, size_t size) {
@@ -53,7 +56,7 @@ static void myMemset(char **arr, const char *str, size_t size) {
 		strcpy(arr[i], str);
 }
 
-void apply(const char *str) {
+char *apply(const char *str) {
 	char **arr = NULL;
 	const int wordSize = findWord(str);
 
@@ -70,7 +73,7 @@ void apply(const char *str) {
 
 		for(j=i;str[i++] != ' ';j++)
 			tmp[index++] = str[j];
-		tmp[j] = '\0';
+		tmp[index] = '\0';
 
 		int size=strlen(tmp)-1;
 		for(int m=0;m<strlen(tmp)/2;m++)
@@ -83,11 +86,23 @@ void apply(const char *str) {
 		free(tmp);
 	}
 
-	print(arr, wordSize);
+	int size = sizeChars(arr, wordSize), newStrIndex=0;
+	char *newStr = (char*)malloc(sizeof(char)*size+wordSize+1);
+
+	for(int i=0;i<wordSize;i++) {
+		for(int j=0;arr[i][j] != '\0';j++)
+			newStr[newStrIndex++] = arr[i][j];
+		newStr[newStrIndex++] = ' ';
+	}
+
+	newStr[newStrIndex] = '\0';
+	printf("index: %d\n", newStrIndex);
 
 	for(int i=0;i<wordSize;i++)
 		free(arr[i]);
 	free(arr);
+
+	return newStr;
 }
 
 int main() {
@@ -97,5 +112,11 @@ int main() {
 	fgets(str, sizeof(str), stdin);
 	str[strlen(str)-1] = '\0';
 
-	apply(str);
+	char *newStr = apply(str);
+
+	printf("oldStr: %s\n", str);
+	printf("newStr: %s\n", newStr);
+
+	free(newStr);
+	return 0;
 }
