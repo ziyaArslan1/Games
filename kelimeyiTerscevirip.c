@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 /*
 #define swapInit(TYPE) \
 void swap(TYPE *val1, TYPE *val2) {\
@@ -8,7 +9,8 @@ void swap(TYPE *val1, TYPE *val2) {\
 	*val1 = *val2;\
 	*val2 = tmp;\
 }
-swapInit(char);*/
+swapInit(char);
+*/
 
 void swap(void *val1, void *val2, const size_t size) {
 	void *temp = malloc(size+1);
@@ -51,7 +53,8 @@ static void myMemset(char **arr, const char *str, size_t size) {
 		strcpy(arr[i], str);
 }
 
-void apply(char **arr, const char *str) {
+void apply(const char *str) {
+	char **arr = NULL;
 	const int wordSize = findWord(str);
 
 	arr = make(1024, wordSize);
@@ -88,12 +91,11 @@ void apply(char **arr, const char *str) {
 }
 
 int main() {
-	char **wordArray = NULL;
 	char str[1024]={0};
 
 	printf("str: ");
 	fgets(str, sizeof(str), stdin);
 	str[strlen(str)-1] = '\0';
 
-	apply(wordArray, str);
+	apply(str);
 }
