@@ -1,15 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+/*
 #define swapInit(TYPE) \
 void swap(TYPE *val1, TYPE *val2) {\
 	TYPE tmp = *val1;\
 	*val1 = *val2;\
 	*val2 = tmp;\
 }
+swapInit(char);*/
 
-swapInit(char);
+void swap(void *val1, void *val2, const size_t size) {
+	void *temp = malloc(size+1);
+
+	memcpy(temp, val1, size);
+	memcpy(val1, val2, size);
+	memcpy(val2, temp, size);
+
+	free(temp);
+}
 
 typedef unsigned int uint;
 static uint findWord(const char *str) {
@@ -45,7 +54,7 @@ static void myMemset(char **arr, const char *str, size_t size) {
 void apply(char **arr, const char *str) {
 	const int wordSize = findWord(str);
 
-	arr = make(20, wordSize);
+	arr = make(1024, wordSize);
 	myMemset(arr, "", wordSize);
 	int arrIndex=0;
 
@@ -62,7 +71,7 @@ void apply(char **arr, const char *str) {
 
 		int size=strlen(tmp)-1;
 		for(int m=0;m<strlen(tmp)/2;m++)
-			swap(&tmp[m], &tmp[size--]);
+			swap(&tmp[m], &tmp[size--], sizeof(tmp[m]));
 
 		if(arrIndex < wordSize)
 			strcpy(arr[arrIndex++], tmp);
