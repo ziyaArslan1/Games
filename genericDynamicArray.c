@@ -1,88 +1,95 @@
-/*
-* date  : 03.03.2021
-* author: ziya arslan
-* generic dynamic array
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-typedef struct _ZZ {
-        void *arr;
-        size_t cap;
-        size_t size;
-        size_t type;
-}ZZ;
+typedef struct {
+	void *data;
+	size_t cap;
+	size_t size;
+	size_t type;
+}GENERIC;
 
-int init(ZZ *root, size_t type) {
-        root->cap = 4;
-        root->size = 0;
-        root->type = type;
-
-        root->arr = malloc(type*root->cap);
-
-        if(root->arr == NULL)
-                return EXIT_FAILURE;
-
-        return EXIT_SUCCESS;
+void destroy(GENERIC *array) {
+	free(array->data);
+	free(array);
 }
 
-int addFunction(ZZ *root, void *address) {
-        if(root->size >= root->cap) {
-                root->cap *= 2;
-                root->arr = realloc(root->arr, root->cap*root->type);
+int init(GENERIC *array, const size_t type) {
+	array->size = 0;
+	array->cap = 4;
+	array->type = type;
 
-                memcpy(root->arr + root->size * root->type, address, root->type);
-                root->size++;
-                return EXIT_SUCCESS;
-        }
+	array->data = malloc(array->type*array->cap);
 
-        memcpy(root->arr + root->size * root->type, address, root->type);
-        root->size++;
-        return EXIT_SUCCESS;
+	return (array->data != NULL);
 }
 
-int delFunction(ZZ *root, size_t index) {
-        if(root->size == 0) {
-                printf("array is empty!\n");
-                return EXIT_FAILURE;
-        }
-        return 1;
+int addToEnd(GENERIC *array, const void *data) {
+	char *src = (char*)malloc(sizeof(char)*array->type);
+	memcpy(src, data, array->type);
+
+	if(array->size >= array->cap) {
+		array->cap *= 2;
+		array->data = realloc(array->data, array->type*array->cap);
+	}
+
+	if(array->data == NULL)
+		return 0;
+
+	memcpy(array->data+array->size*array->type, src, array->type);
+	array->size++;
+
+	free(src);
+
+	return 1;
 }
 
-void clearZZ(ZZ *root) {
-        free(root->arr);
-        free(root);
+int delToEnd(GENERIC *array) {
+	array->size--;
+	return 1;
 }
 
-void printZZ(ZZ *root, size_t type) {
-        size_t index=1;
+void print(GENERIC *array) {
+	printf("\n");
 
-        for(size_t i=0;i<root->type*root->size;i += root->type)
-                printf("%zu. data: %d\n", index++, *(int*)(root->arr+i));
+	int cnt=1;
 
+	for(int i=0;i<array->size*array->type;i += array->type)
+		printf("%d.  Data >> %s\n", cnt++, (char*)(array->data+i));
+
+	printf("\n");
 }
 
 int main() {
-        // test
-        ZZ *start = (ZZ*)malloc(sizeof(ZZ));
 
-        if(init(start, sizeof(int)) == EXIT_FAILURE) {
-                printf("\ninit() error!\n");
-                return -1;
-        }
+	//test
 
-        for(int i=1;i<=20;i++) {
-                int num = rand()%(122-97+1)+97;
-                addFunction(start, &num);
-        }
+	GENERIC *array = (GENERIC*)malloc(sizeof(GENERIC));
 
-        printZZ(start, sizeof(int));
+	char str[10];
 
-        printf("\ncap : %zu\n", start->cap);
-        printf("size: %zu\n", start->size);
-        printf("type: %zu\n", start->type);
+	if(!init(array, sizeof(str))) {
+		printf("memory error!\n");
+		return -1;
+	}
 
-        clearZZ(start);
-        return 0;
+	for(int i=97;i<=122;i++) {
+		int j;
+
+		for(j=0;j<9;j++)
+			str[j] = rand()%(122-97+1)+97;
+		str[j] = '\0';
+		if(!addToEnd(array, str))
+			return -1;
+	}
+
+	print(array);
+	for(int i=0;i<3;i++)
+		delToEnd(array);
+
+	print(array);
+
+	destroy(array);
+
+	return 0;
 }
