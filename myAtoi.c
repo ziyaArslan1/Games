@@ -9,7 +9,7 @@ int myAtoi(const char *str) {
 		i++;
 
 	for(;str[i] != '\0';i++) {
-		if((str[i] >= 48 && str[i] <= 57) || str[0] == '-') {
+		if(str[i] >= 48 && str[i] <= 57) {
 			if(size >= cap) {
 				cap *= 2;
 				array = (int*)realloc(array, sizeof(int)*cap);
@@ -45,7 +45,7 @@ int myAtoi(const char *str) {
 int main() {
 	//test
 	int x = myAtoi("12-3");
-	int y = myAtoi("-123");
+	int y = myAtoi("--123");
 	int z = myAtoi("100000");
 	int q = myAtoi("string");
 
