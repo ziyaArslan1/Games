@@ -23,8 +23,10 @@ int myAtoi(const char *str) {
 
 	int steps[] = {0,1,10,100,1000,10000,100000,1000000};
 
-	if(size >= (sizeof(steps)/sizeof(steps[0])))
+	if(size >= (sizeof(steps)/sizeof(steps[0]))) {
+		free(array);
 		return -1;
+	}
 
 	int num=0, step = steps[size];
 
@@ -41,6 +43,7 @@ int myAtoi(const char *str) {
 }
 
 int main() {
+	//test
 	int x = myAtoi("12-3");
 	int y = myAtoi("-123");
 	int z = myAtoi("100000");
