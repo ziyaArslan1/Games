@@ -17,16 +17,19 @@ int myAtoi(const char *str) {
 			array[size++] = str[i] - '0';
 		} else {
 			free(array);
-			return 0; // wrong string is return 0
+			return -1; // wrong string is return exit_failure
 		}
 	}
 
 	int steps[] = {0,1,10,100,1000,10000,100000,1000000};
 
+	if(size >= (sizeof(steps)/sizeof(steps[0])))
+		return -1;
+
 	int num=0, step = steps[size];
 
 
-	for(int i=0;i<size;i++) {
+	for(i=0;i<size;i++) {
 		num += array[i]*step;
 		step /= 10;
 	}
@@ -40,7 +43,8 @@ int myAtoi(const char *str) {
 int main() {
 	int x = myAtoi("12-3");
 	int y = myAtoi("-123");
-	int z = myAtoi("123");
+	int z = myAtoi("100000");
+	int q = myAtoi("string");
 
-	printf("%d  %d  %d\n", x, y, z);
+	printf("%d  %d  %d  %d\n", x, y, z, q);
 }
