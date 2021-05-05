@@ -5,14 +5,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct {
+struct HASH {
 	int *array;
 	size_t cap;
 	size_t size;
 	size_t key;
-}HASH;
+};
 
-void init(HASH **hash) {
+typedef struct HASH hash_t;
+
+void init(hash_t **hash) {
 	(*hash)->size = 0;
 	(*hash)->cap = 4;
 	(*hash)->key = rand()%(10-2+1)+2;
@@ -20,7 +22,7 @@ void init(HASH **hash) {
 	(*hash)->array = (int*)malloc(sizeof(int)*(*hash)->cap);
 }
 
-int encrypt(HASH **hash, const char *value) {
+int encrypt(hash_t **hash, const char *value) {
 	for(int i=0;i<strlen(value);i++) {
 		int num = value[i];
 		while(num) {
@@ -37,7 +39,7 @@ int encrypt(HASH **hash, const char *value) {
 	return 1;
 }
 
-void decrypt(HASH **hash) {
+void decrypt(hash_t **hash) {
 	int index=0, cap=4;
 	int *nums = (int*)malloc(sizeof(int)*cap);
 
@@ -69,13 +71,13 @@ void decrypt(HASH **hash) {
 	for(int i=0;i<index;i++)
 		str[i] = nums[i];
 
-	printf("%s\n", str);
+	printf("\nDecrypt : %s\n", str);
 
 	free(str);
 	free(nums);
 }
 
-void printHash(HASH **hash) {
+void printHash(hash_t **hash) {
 	for(int i=0;i<(*hash)->size;i++)
 		printf("%d", (*hash)->array[i]);
 	printf("\n");
@@ -84,7 +86,7 @@ void printHash(HASH **hash) {
 int main() {
 	srand((unsigned)time(NULL));
 
-	HASH *hash = (HASH*)malloc(sizeof(HASH));
+	hash_t *hash = (hash_t*)malloc(sizeof(hash_t));
 	init(&hash);
 
 	char str[1024];
@@ -93,16 +95,16 @@ int main() {
 	fgets(str, sizeof(str), stdin);
 	str[strlen(str)-1] = '\0';
 
-	printf("Normal : %s\n", str);
 
 	//encrypt
 	encrypt(&hash, str);
-	printf("Sifrelenmis : ");
+	printf("\nEncrypt : ");
 	printHash(&hash);
 
 	//decrypt
 	decrypt(&hash);
 
+	printf("size: %zu  %zu\n", sizeof(hash), hash->size);
 	free(hash->array);
 	free(hash);
 
