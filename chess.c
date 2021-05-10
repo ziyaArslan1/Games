@@ -166,6 +166,35 @@ int rockCtrl(int (*map)[][MAP], const int rockRow, const int rockCol, const int 
 			return flag;
 	}
 
+	else if(rock == 2) { // kale hareketleri
+		int flag=1;
+		if(rockCol == col) {
+			for(int i=1;i<row-1;i++)
+				if((*map)[rockRow+i][rockCol] != 0)
+					flag=0;
+		}
+		return flag;
+	}
+
+	else if(rock == 4) { // fil hareketleri
+		if(rockRow == row || rockCol == col)
+			return 0;
+		else {
+			int flag=1;
+			if(rockRow+1 == row && rockCol+1 == col)
+				for(int i=1;i<row-1;i++)
+					for(int j=1;j<col-1;j++)
+						if((*map)[rockRow+i][rockCol+j] != 0)
+							flag=0;
+			if(rockRow-1 == row && rockCol-1 == col)
+				for(int i=1;i<row-1;i++)
+					for(int j=1;j<col-1;j++)
+						if((*map)[rockRow-i][rockCol-j] != 0)
+							flag=0;
+			return flag;
+		}
+	}
+
 	return 0;
 }
 
