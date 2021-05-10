@@ -21,6 +21,8 @@ void printMap(int (*)[][MAP]);
 int ctrlRowCol(const char*, const char*);
 void choice(int (*)[][MAP]);
 int rockCtrl(int (*)[][MAP], const int, const int, const int, const int, const int);
+void newRock(int (*)[][MAP], const int, const int);
+
 
 void init(int (*map)[][MAP]) {
 	for(int i=0;i<MAP;i++) {
@@ -105,12 +107,63 @@ void myMove(int (*map)[][MAP], const char *source, const char *target) {
 
 	(*map)[targetRow][targetCol] = (*map)[sourceRow][sourceCol];
 	(*map)[sourceRow][sourceCol] = 0;
+
+	if(targetRow == MAP-1)
+		newRock(map, targetRow, targetCol);
+}
+
+
+void newRock(int (*map)[][MAP], const int row, const int col) {
+	int flag=1;
+
+	while(flag) {
+		char newRc[6];
+		printf("new rock(vezir/at/kale/fil): ");
+		fgets(newRc, sizeof(newRc), stdin);
+		newRc[strlen(newRc)-1] = '\0';
+
+		switch(newRc[0]) {
+			case 'f':
+				(*map)[row][col] = 4;
+				flag=0;
+				break;
+			case 'v':
+				(*map)[row][col] = 5;
+				flag=0;
+				break;
+			case 'k':
+				(*map)[row][col] = 2;
+				flag=0;
+				break;
+			case 'a':
+				(*map)[row][col] = 3;
+				flag=0;
+				break;
+			default:
+				printf("Try again\n");
+				break;
+		}
+	}
 }
 
 int rockCtrl(int (*map)[][MAP], const int rockRow, const int rockCol, const int rock, const int row, const int col) {
-	if(rock == 1) {
+	if(rock == 1) { // piyon hareketleri
+		int flag=1;
+
+		if((rockRow+1 == row && rockCol-1 == col) || (rockRow-1 == row && rockCol+1 == col) || (rockRow+1 == row && rockCol+1 == col) || (rockRow-1 == row && rockCol-1 == col)) {
+			if((*map)[row][col] != 0)
+				return 1;
+			else
+				flag=0;
+		}
+
+		if((rockCol-col) != 1 || (rockCol-col) != -1)
+			flag=0;
+		if(rockCol-col == 0)
+			flag=1;
+
 		if(((rockRow - row) == -1 || (rockRow - row) == 1) && ((*map)[row][col] == 0))
-			return 1;
+			return flag;
 	}
 
 	return 0;
@@ -123,7 +176,9 @@ int main() {
 	printMap(&map);
 
 	while(1) {
-	choice(&map);
-	printMap(&map);
-}
+		choice(&map);
+		printMap(&map);
+	}
+
+	return 0;
 }
