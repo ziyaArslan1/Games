@@ -2,9 +2,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <termios.h>
-#include <unistd.h>
 #include <sys/ioctl.h>
 
+#if WIN32
+	#include <windows.h>
+	#define usleep(x) Sleep(1)
+#elif __unix__
+	#include <unistd.h>
+
+#endif
 #define X 20
 #define Y 20
 
@@ -18,8 +24,7 @@ int row=5, col=10;
 
 char map[X][Y];
 
-int kbhit()
-{
+int kbhit() {
     struct termios term;
     tcgetattr(0, &term);
 
