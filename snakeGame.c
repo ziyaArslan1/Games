@@ -4,13 +4,16 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
-#if WIN32
+#ifdef WIN32
 	#include <windows.h>
-	#define usleep(x) Sleep(1)
+	#define SLEEP Sleep(1)
+	#define CLEAR "cls"
 #elif __unix__
 	#include <unistd.h>
-
+	#define CLEAR "clear"
+	#define SLEEP usleep(90000)
 #endif
+
 #define X 20
 #define Y 20
 
@@ -90,13 +93,18 @@ void defend(char arr[][Y]) {
 }
 
 void print(char arr[][Y]) {
-	system("cls | clear");
+	system(CLEAR);
 
 	printf("score: %d\n", score);
 
 	for(int i=0;i<X;i++) {
 		for(int j=0;j<Y;j++) {
-			printf("%c ", arr[i][j]);
+			if(arr[i][j] == '*')
+				printf("\e[91m%c ", arr[i][j]);
+			else if(arr[i][j] == 'x')
+				printf("\e[93m%c ", arr[i][j]);
+			else
+				printf("\e[90m%c ", arr[i][j]);
 		}
 		printf("\n");
 	}
@@ -159,7 +167,7 @@ void fdown(snake_t *snake, const int lenght) {
 	snake[0].x++;
 }
 
-void ctrlRight(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
+void ctrlRight(long int *i, int *ctrl, snake_t *snake) {
 	while(*i < 100000) {
 		if(*i % 2000 == 0) {
 			if(continues(snake)) {
@@ -171,14 +179,14 @@ void ctrlRight(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
 			defend(map);
 			snakeInfo(map, snake);
 			print(map);
-			usleep(miliSecond);
+			SLEEP;
 		}
 		(*i)++;
 		if(kbhit()) break;
 	}
 }
 
-void ctrlLeft(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
+void ctrlLeft(long int *i, int *ctrl, snake_t *snake) {
     while(*i < 100000) {
         if(*i % 2000 == 0) {
             if(continues(snake)) {
@@ -190,14 +198,14 @@ void ctrlLeft(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
             defend(map);
             snakeInfo(map, snake);
             print(map);
-			usleep(miliSecond);
+			SLEEP;
         }
         (*i)++;
         if(kbhit()) break;
     }
 }
 
-void ctrlUp(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
+void ctrlUp(long int *i, int *ctrl, snake_t *snake) {
     while(*i < 100000) {
         if(*i % 2000 == 0) {
             if(continues(snake)) {
@@ -209,14 +217,14 @@ void ctrlUp(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
             defend(map);
             snakeInfo(map, snake);
             print(map);
-			usleep(miliSecond);
+			SLEEP;
         }
         (*i)++;
         if(kbhit()) break;
     }
 }
 
-void ctrlDown(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
+void ctrlDown(long int *i, int *ctrl, snake_t *snake) {
     while(*i < 100000) {
         if(*i % 2000 == 0) {
             if(continues(snake)) {
@@ -228,7 +236,7 @@ void ctrlDown(long int *i, int *ctrl, snake_t *snake, long int miliSecond) {
             defend(map);
             snakeInfo(map, snake);
             print(map);
-			usleep(miliSecond);
+			SLEEP;
         }
         (*i)++;
         if(kbhit()) break;
@@ -254,7 +262,7 @@ int main() {
 
 	char yon;
 	snake_t snake[100];
-	long int i, miliSecond=90000;
+	long int i;
 	int ctrl=0;
 
 	defend(map);
@@ -269,14 +277,15 @@ int main() {
 		i=0;
 
 		if(yon == 'd')
-			ctrlRight(&i, &ctrl, snake, miliSecond);
+			ctrlRight(&i, &ctrl, snake);
 		else if(yon == 'a')
-			ctrlLeft(&i, &ctrl, snake, miliSecond);
+			ctrlLeft(&i, &ctrl, snake);
 		else if(yon == 'w')
-			ctrlUp(&i, &ctrl, snake, miliSecond);
+			ctrlUp(&i, &ctrl, snake);
 		else if(yon == 's')
-			ctrlDown(&i, &ctrl, snake, miliSecond);
-		else continue;
+			ctrlDown(&i, &ctrl, snake);
+		else
+			continue;
 
 		if(ctrl == 1) break;
 	}
