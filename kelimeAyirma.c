@@ -44,19 +44,20 @@ static void myMemset(char **arr, const char *str, size_t size) {
 
 void apply(char **arr, const char *str) {
 	const int wordSize = findWord(str);
+	const int len = strlen(str);
 
 	arr = make(1024, wordSize);
 	myMemset(arr, "", wordSize);
 	int arrIndex=0;
 
-	for(int i=0;i<strlen(str);) {
+	for(int i=0;i<len;) {
 		char *tmp;
 		int index=0, j;
 
-		for(j=i;str[j] != ' ';j++);
-		tmp = (char*)malloc(sizeof(char)*j+1);
+		for(j=i;str[j] != ' ' && j < len;j++);
+		tmp = (char*)malloc(sizeof(char)*j-i+1);
 
-		for(j=i;str[i++] != ' ';j++)
+		for(j=i;str[i++] != ' ' && j < len;j++)
 			tmp[index++] = str[j];
 		tmp[j] = '\0';
 
